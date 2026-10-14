@@ -1,45 +1,59 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { HomeScreen } from './src/screens/HomeScreen';
+import { WeatherScreen } from './src/screens/WeatherScreen';
+import { DangNhap } from './src/screens/DangNhap';
+import { DoanChat } from './src/screens/DoanChat';
+import type { DanhSachManHinh } from './src/commons/dieuHuong';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BaiTapChat } from './src/baiTapChat';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+const Stack = createNativeStackNavigator<DanhSachManHinh>();
+type ManHinhGoc = { BaiTapChat: undefined; DuAnCu: undefined };
+const RootStack = createNativeStackNavigator<ManHinhGoc>();
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const ManHinhBaiTapChat = ({
+  navigation,
+}: NativeStackScreenProps<ManHinhGoc, 'BaiTapChat'>) => (
+  <BaiTapChat moDuAnCu={() => navigation.navigate('DuAnCu')} />
+);
 
+const DuAnCu = () => (
+  <Stack.Navigator
+    initialRouteName="DangNhap"
+    screenOptions={{ headerShown: false }}
+  >
+    <Stack.Screen name="DangNhap" component={DangNhap} />
+    <Stack.Screen name="DoanChat" component={DoanChat} />
+    <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen name="Weather" component={WeatherScreen} />
+  </Stack.Navigator>
+);
+
+function App(): React.JSX.Element {
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <NavigationContainer>
+        <RootStack.Navigator
+          initialRouteName="BaiTapChat"
+          screenOptions={{ headerShown: false }}
+        >
+          <RootStack.Screen name="BaiTapChat" component={ManHinhBaiTapChat} />
+          <RootStack.Screen
+            name="DuAnCu"
+            component={DuAnCu}
+            options={{
+              headerShown: true,
+              title: 'Dự án ban đầu',
+              headerTintColor: '#11776B',
+            }}
+          />
+        </RootStack.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
